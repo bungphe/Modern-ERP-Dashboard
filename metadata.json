@@ -1,0 +1,5 @@
+{
+  "name": "Modern ERP Dashboard",
+  "description": "A responsive, enterprise-grade ERP dashboard featuring revenue analytics, KPI tracking, and AI-powered insights using Gemini 2.5 Flash.",
+  "requestFramePermissions": []
+}
