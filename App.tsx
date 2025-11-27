@@ -3,12 +3,20 @@ import Header from './components/Header';
 import StatCard from './components/StatCard';
 import RevenueChart from './components/RevenueChart';
 import RecentActivity from './components/RecentActivity';
+import UserProfileModal from './components/UserProfileModal';
+import ChatWidget from './components/ChatWidget';
+import LandingPage from './components/LandingPage';
 import { COMPANIES, MOCK_KPI_DATA, MOCK_ACTIVITY, MOCK_CHART_DATA, BRANCHES } from './constants';
-import { KpiData } from './types';
+import { KpiData, UserProfile } from './types';
 import { Calendar, ChevronDown, Sparkles, RefreshCw } from 'lucide-react';
 import { analyzeDashboardData } from './services/geminiService';
 
 const App: React.FC = () => {
+  // --- Navigation State ---
+  const [showLanding, setShowLanding] = useState(true);
+
+  // --- Local Storage Initialization ---
+
   const [currentCompanyId, setCurrentCompanyId] = useState<string>(() => {
     const saved = localStorage.getItem('currentCompanyId');
     const validId = COMPANIES.find(c => c.id === saved)?.id;
@@ -23,14 +31,24 @@ const App: React.FC = () => {
     const saved = localStorage.getItem('selectedBranchId');
     return saved || BRANCHES[0].id;
   });
+
+  const [userProfile, setUserProfile] = useState<UserProfile>(() => {
+    const saved = localStorage.getItem('userProfile');
+    return saved ? JSON.parse(saved) : { name: 'Hoàng Phúc', role: 'Quản trị viên', avatarUrl: '' };
+  });
+  
+  // --- UI State ---
   
   const [isBranchOpen, setIsBranchOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   
-  // AI State
+  // --- AI State ---
+  
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  // Persist state changes
+  // --- Effects for Persistence ---
+
   useEffect(() => {
     localStorage.setItem('currentCompanyId', currentCompanyId);
   }, [currentCompanyId]);
@@ -42,6 +60,12 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('selectedBranchId', selectedBranchId);
   }, [selectedBranchId]);
+
+  useEffect(() => {
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+  }, [userProfile]);
+
+  // --- Derived State ---
 
   const currentCompany = COMPANIES.find(c => c.id === currentCompanyId) || COMPANIES[0];
   const selectedBranch = BRANCHES.find(b => b.id === selectedBranchId) || BRANCHES[0];
@@ -55,6 +79,8 @@ const App: React.FC = () => {
       value: Math.floor(item.value * 0.85)
     }));
   }, [currentCompanyId]);
+
+  // --- Handlers ---
 
   const handleCompanyChange = (id: string) => {
     setCurrentCompanyId(id);
@@ -74,13 +100,31 @@ const App: React.FC = () => {
     }
   };
 
+  const handleUpdateProfile = (updatedProfile: UserProfile) => {
+    setUserProfile(updatedProfile);
+  };
+
+  // --- Render Landing Page ---
+  if (showLanding) {
+    return <LandingPage onStart={() => setShowLanding(false)} />;
+  }
+
+  // --- Render Dashboard ---
   return (
-    <div className="min-h-screen bg-[#f0f2f5] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f0f2f5] flex flex-col font-sans relative">
       <Header 
         currentCompany={currentCompany} 
         companies={COMPANIES} 
         onCompanyChange={handleCompanyChange}
-        user={{ name: 'Hoàng Phúc', role: 'Quản trị viên' }}
+        user={userProfile}
+        onProfileClick={() => setIsProfileModalOpen(true)}
+      />
+
+      <UserProfileModal 
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        currentUser={userProfile}
+        onSave={handleUpdateProfile}
       />
 
       <main className="flex-1 px-4 md:px-6 py-6 max-w-[1600px] mx-auto w-full">
@@ -88,7 +132,7 @@ const App: React.FC = () => {
         {/* Welcome & Filters Row */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl font-bold text-blue-800 flex items-center gap-2">
-            Chào Hoàng Phúc, 
+            Chào {userProfile.name}, 
             <span className="text-gray-500 font-normal text-lg hidden lg:inline-block">chúc bạn một ngày làm việc hiệu quả!</span>
           </h1>
 
@@ -175,8 +219,14 @@ const App: React.FC = () => {
              <RecentActivity activities={MOCK_ACTIVITY} />
           </div>
         </div>
-
       </main>
+
+      {/* Chat Widget */}
+      <ChatWidget 
+        kpiData={dashboardData} 
+        recentActivity={MOCK_ACTIVITY}
+        user={userProfile}
+      />
     </div>
   );
 };

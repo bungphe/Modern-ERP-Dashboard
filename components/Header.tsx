@@ -12,6 +12,7 @@ interface HeaderProps {
   companies: CompanyConfig[];
   onCompanyChange: (id: string) => void;
   user: UserProfile;
+  onProfileClick: () => void;
 }
 
 const NAV_ITEMS = [
@@ -27,7 +28,7 @@ const NAV_ITEMS = [
   { label: 'Cài đặt', icon: Settings },
 ];
 
-const Header: React.FC<HeaderProps> = ({ currentCompany, companies, onCompanyChange, user }) => {
+const Header: React.FC<HeaderProps> = ({ currentCompany, companies, onCompanyChange, user, onProfileClick }) => {
   return (
     <div className="flex flex-col w-full">
       {/* Top Bar */}
@@ -77,7 +78,10 @@ const Header: React.FC<HeaderProps> = ({ currentCompany, companies, onCompanyCha
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
             </button>
             
-            <div className="flex items-center gap-2 pl-4 border-l border-gray-200 cursor-pointer hover:opacity-80">
+            <div 
+                className="flex items-center gap-2 pl-4 border-l border-gray-200 cursor-pointer hover:opacity-80"
+                onClick={onProfileClick}
+            >
                 <div className="text-right hidden md:block">
                     <div className="text-sm font-bold text-gray-800">{user.name}</div>
                     <div className="text-xs text-gray-500">{user.role}</div>

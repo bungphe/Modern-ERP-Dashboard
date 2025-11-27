@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { KpiData, ActivityLog } from "../types";
+import { KpiData, ActivityLog, UserProfile } from "../types";
 
 // Initialize Gemini client
 // Note: In a real production app, we would likely proxy this through a backend to protect the API key,
@@ -47,5 +47,52 @@ export const analyzeDashboardData = async (kpiData: KpiData[], recentActivity: A
   } catch (error) {
     console.error("Lỗi khi gọi Gemini API:", error);
     return "Đã xảy ra lỗi khi kết nối với trợ lý AI. Vui lòng thử lại sau.";
+  }
+};
+
+export const sendChatMessage = async (
+  message: string, 
+  context: { kpiData: KpiData[], recentActivity: ActivityLog[], user: UserProfile }
+) => {
+  if (!apiKey) {
+    return "Vui lòng cấu hình API Key để sử dụng tính năng chat AI.";
+  }
+
+  try {
+    const { kpiData, recentActivity, user } = context;
+    const kpiSummary = kpiData.map(k => `${k.label}: ${k.value.toLocaleString()} ${k.currency}`).join('\n');
+    const activitySummary = recentActivity.slice(0, 5).map(a => `${a.user} - ${a.action} lúc ${a.time} ngày ${a.date}`).join('\n');
+
+    const systemInstruction = `
+      Bạn là Trợ lý ERP thông minh cho phần mềm quản lý doanh nghiệp.
+      Tên người dùng hiện tại: ${user.name} (${user.role}).
+      
+      Dữ liệu hệ thống hiện tại:
+      
+      [KPI TÀI CHÍNH]
+      ${kpiSummary}
+      
+      [HOẠT ĐỘNG GẦN ĐÂY]
+      ${activitySummary}
+      
+      Nhiệm vụ của bạn là trả lời các câu hỏi của người dùng liên quan đến số liệu kinh doanh, tình hình hoạt động, hoặc tư vấn quản trị.
+      Trả lời ngắn gọn, súc tích, chuyên nghiệp bằng tiếng Việt.
+      Nếu câu hỏi không liên quan đến công việc hoặc dữ liệu, hãy khéo léo từ chối hoặc lái về chủ đề kinh doanh.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: message,
+      config: {
+        systemInstruction: systemInstruction,
+        temperature: 0.7,
+      }
+    });
+
+    return response.text || "Xin lỗi, tôi không thể trả lời ngay lúc này.";
+
+  } catch (error) {
+    console.error("Lỗi khi gọi Gemini Chat API:", error);
+    return "Đã xảy ra lỗi kết nối. Vui lòng thử lại.";
   }
 };

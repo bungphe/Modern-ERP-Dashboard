@@ -43,3 +43,10 @@ export interface Branch {
   id: string;
   name: string;
 }
+
+export interface ChatMessage {
+  id: string;
+  text: string;
+  sender: 'user' | 'ai';
+  timestamp: Date;
+}
