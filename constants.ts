@@ -1,4 +1,4 @@
-import { KpiData, ActivityLog, ChartDataPoint, CompanyConfig, Branch } from './types';
+import { KpiData, ActivityLog, ChartDataPoint, CompanyConfig, Branch, Account, JournalEntry } from './types';
 
 export const COMPANIES: CompanyConfig[] = [
   { id: 'c1', name: 'Công ty TNHH Hoàng Phúc', logoText: 'ERP', themeColor: '#2563eb' },
@@ -108,4 +108,27 @@ export const MOCK_CHART_DATA: ChartDataPoint[] = [
   { name: '20', revenue: 40, branch: 'HN' },
   { name: '25', revenue: 80, branch: 'HN' },
   { name: '30', revenue: 70, branch: 'HN' },
+];
+
+// --- ACCOUNTING MOCK DATA ---
+export const MOCK_ACCOUNTS: Account[] = [
+  { code: '111', name: 'Tiền mặt', category: 'Tài sản', balance: 150200000, type: 'Dư Nợ' },
+  { code: '112', name: 'Tiền gửi ngân hàng', category: 'Tài sản', balance: 2540000000, type: 'Dư Nợ' },
+  { code: '131', name: 'Phải thu khách hàng', category: 'Tài sản', balance: 320500000, type: 'Dư Nợ' },
+  { code: '156', name: 'Hàng hóa', category: 'Tài sản', balance: 1200000000, type: 'Dư Nợ' },
+  { code: '211', name: 'Tài sản cố định hữu hình', category: 'Tài sản', balance: 850000000, type: 'Dư Nợ' },
+  { code: '331', name: 'Phải trả người bán', category: 'Nợ phải trả', balance: 150000000, type: 'Dư Có' },
+  { code: '333', name: 'Thuế và các khoản phải nộp', category: 'Nợ phải trả', balance: 45000000, type: 'Dư Có' },
+  { code: '411', name: 'Vốn đầu tư của CSH', category: 'Vốn chủ sở hữu', balance: 5000000000, type: 'Dư Có' },
+  { code: '511', name: 'Doanh thu bán hàng', category: 'Doanh thu', balance: 2450000000, type: 'Dư Có' },
+  { code: '632', name: 'Giá vốn hàng bán', category: 'Chi phí', balance: 1850000000, type: 'Dư Nợ' },
+  { code: '642', name: 'Chi phí quản lý DN', category: 'Chi phí', balance: 125000000, type: 'Dư Nợ' },
+];
+
+export const MOCK_JOURNAL_ENTRIES: JournalEntry[] = [
+  { id: '1', date: '22-11-2025', voucherNo: 'PT0024', description: 'Thu tiền khách hàng Công ty A', debitAccount: '112', creditAccount: '131', amount: 50000000 },
+  { id: '2', date: '22-11-2025', voucherNo: 'PC0018', description: 'Chi tiền mua văn phòng phẩm', debitAccount: '642', creditAccount: '111', amount: 2500000 },
+  { id: '3', date: '21-11-2025', voucherNo: 'PN0056', description: 'Nhập kho hàng hóa theo hóa đơn 001', debitAccount: '156', creditAccount: '331', amount: 120000000 },
+  { id: '4', date: '21-11-2025', voucherNo: 'HĐ0123', description: 'Doanh thu bán hàng đại lý X', debitAccount: '131', creditAccount: '511', amount: 85000000 },
+  { id: '5', date: '20-11-2025', voucherNo: 'BN0012', description: 'Thanh toán tiền điện nước tháng 10', debitAccount: '642', creditAccount: '112', amount: 12500000 },
 ];

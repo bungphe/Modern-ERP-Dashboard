@@ -3,7 +3,7 @@ import {
   Search, Bell, Settings, LayoutGrid, 
   Home, Users, Briefcase, Package, Download, 
   Upload, Archive, CreditCard, FileText, HelpCircle,
-  LogOut
+  LogOut, Calculator
 } from 'lucide-react';
 import { CompanyConfig, UserProfile } from '../types';
 
@@ -13,22 +13,33 @@ interface HeaderProps {
   onCompanyChange: (id: string) => void;
   user: UserProfile;
   onProfileClick: () => void;
+  currentView: string;
+  onViewChange: (view: string) => void;
 }
 
 const NAV_ITEMS = [
-  { label: 'Tổng quan', icon: Home, active: true },
-  { label: 'Nhân viên', icon: Users },
-  { label: 'Đối tác', icon: Briefcase },
-  { label: 'Sản phẩm', icon: Package },
-  { label: 'Nhập hàng', icon: Download },
-  { label: 'Bán hàng', icon: Upload },
-  { label: 'Điều phối kho', icon: Archive },
-  { label: 'Chi phí', icon: CreditCard },
-  { label: 'Báo cáo', icon: FileText },
-  { label: 'Cài đặt', icon: Settings },
+  { id: 'dashboard', label: 'Tổng quan', icon: Home },
+  { id: 'accounting', label: 'Kế toán', icon: Calculator },
+  { id: 'staff', label: 'Nhân viên', icon: Users },
+  { id: 'partners', label: 'Đối tác', icon: Briefcase },
+  { id: 'products', label: 'Sản phẩm', icon: Package },
+  { id: 'import', label: 'Nhập hàng', icon: Download },
+  { id: 'sales', label: 'Bán hàng', icon: Upload },
+  { id: 'warehouse', label: 'Điều phối kho', icon: Archive },
+  { id: 'expenses', label: 'Chi phí', icon: CreditCard },
+  { id: 'reports', label: 'Báo cáo', icon: FileText },
+  { id: 'settings', label: 'Cài đặt', icon: Settings },
 ];
 
-const Header: React.FC<HeaderProps> = ({ currentCompany, companies, onCompanyChange, user, onProfileClick }) => {
+const Header: React.FC<HeaderProps> = ({ 
+  currentCompany, 
+  companies, 
+  onCompanyChange, 
+  user, 
+  onProfileClick,
+  currentView,
+  onViewChange
+}) => {
   return (
     <div className="flex flex-col w-full">
       {/* Top Bar */}
@@ -79,7 +90,7 @@ const Header: React.FC<HeaderProps> = ({ currentCompany, companies, onCompanyCha
             </button>
             
             <div 
-                className="flex items-center gap-2 pl-4 border-l border-gray-200 cursor-pointer hover:opacity-80"
+                className="flex items-center gap-2 pl-4 border-l border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={onProfileClick}
             >
                 <div className="text-right hidden md:block">
@@ -96,10 +107,11 @@ const Header: React.FC<HeaderProps> = ({ currentCompany, companies, onCompanyCha
       {/* Navigation Bar */}
       <div className="bg-[#007bff] text-white overflow-x-auto no-scrollbar">
         <div className="flex items-center px-4 min-w-max">
-            {NAV_ITEMS.map((item, index) => (
+            {NAV_ITEMS.map((item) => (
                 <button 
-                    key={index}
-                    className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-4 ${item.active ? 'border-white bg-blue-700' : 'border-transparent hover:bg-blue-600'}`}
+                    key={item.id}
+                    onClick={() => onViewChange(item.id)}
+                    className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-4 ${currentView === item.id ? 'border-white bg-blue-700' : 'border-transparent hover:bg-blue-600'}`}
                 >
                     <item.icon size={16} />
                     {item.label}

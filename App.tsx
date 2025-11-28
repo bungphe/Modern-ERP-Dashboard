@@ -6,7 +6,8 @@ import RecentActivity from './components/RecentActivity';
 import UserProfileModal from './components/UserProfileModal';
 import ChatWidget from './components/ChatWidget';
 import LandingPage from './components/LandingPage';
-import { COMPANIES, MOCK_KPI_DATA, MOCK_ACTIVITY, MOCK_CHART_DATA, BRANCHES } from './constants';
+import AccountingView from './components/AccountingView';
+import { COMPANIES, MOCK_KPI_DATA, MOCK_ACTIVITY, MOCK_CHART_DATA, BRANCHES, MOCK_ACCOUNTS, MOCK_JOURNAL_ENTRIES } from './constants';
 import { KpiData, UserProfile } from './types';
 import { Calendar, ChevronDown, Sparkles, RefreshCw } from 'lucide-react';
 import { analyzeDashboardData } from './services/geminiService';
@@ -14,6 +15,7 @@ import { analyzeDashboardData } from './services/geminiService';
 const App: React.FC = () => {
   // --- Navigation State ---
   const [showLanding, setShowLanding] = useState(true);
+  const [currentView, setCurrentView] = useState('dashboard');
 
   // --- Local Storage Initialization ---
 
@@ -109,7 +111,7 @@ const App: React.FC = () => {
     return <LandingPage onStart={() => setShowLanding(false)} />;
   }
 
-  // --- Render Dashboard ---
+  // --- Render Main App ---
   return (
     <div className="min-h-screen bg-[#f0f2f5] flex flex-col font-sans relative">
       <Header 
@@ -118,6 +120,8 @@ const App: React.FC = () => {
         onCompanyChange={handleCompanyChange}
         user={userProfile}
         onProfileClick={() => setIsProfileModalOpen(true)}
+        currentView={currentView}
+        onViewChange={setCurrentView}
       />
 
       <UserProfileModal 
@@ -129,23 +133,25 @@ const App: React.FC = () => {
 
       <main className="flex-1 px-4 md:px-6 py-6 max-w-[1600px] mx-auto w-full">
         
-        {/* Welcome & Filters Row */}
+        {/* Top Filters Row - Shared across views */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl font-bold text-blue-800 flex items-center gap-2">
-            Chào {userProfile.name}, 
-            <span className="text-gray-500 font-normal text-lg hidden lg:inline-block">chúc bạn một ngày làm việc hiệu quả!</span>
+            {currentView === 'accounting' ? 'Phân hệ Kế toán' : `Chào ${userProfile.name},`}
+            {currentView === 'dashboard' && <span className="text-gray-500 font-normal text-lg hidden lg:inline-block">chúc bạn một ngày làm việc hiệu quả!</span>}
           </h1>
 
           <div className="flex flex-wrap items-center gap-3">
-             {/* AI Button */}
-             <button 
-                onClick={handleAnalyze}
-                disabled={isAnalyzing}
-                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-md shadow hover:shadow-lg transition-all disabled:opacity-50"
-             >
-                {isAnalyzing ? <RefreshCw className="animate-spin w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
-                {isAnalyzing ? 'Đang phân tích...' : 'Trợ lý AI'}
-             </button>
+             {/* AI Button - Only on Dashboard for now */}
+             {currentView === 'dashboard' && (
+               <button 
+                  onClick={handleAnalyze}
+                  disabled={isAnalyzing}
+                  className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-md shadow hover:shadow-lg transition-all disabled:opacity-50"
+               >
+                  {isAnalyzing ? <RefreshCw className="animate-spin w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
+                  {isAnalyzing ? 'Đang phân tích...' : 'Trợ lý AI'}
+               </button>
+             )}
 
              {/* Branch Selector */}
              <div className="relative">
@@ -189,39 +195,47 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* AI Result Panel */}
-        {aiAnalysis && (
-            <div className="mb-6 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-lg p-4 shadow-sm relative overflow-hidden animate-in fade-in duration-300">
-                <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
-                <h3 className="text-indigo-800 font-bold text-sm flex items-center gap-2 mb-2">
-                    <Sparkles size={14} />
-                    Phân tích từ Trợ lý AI
-                </h3>
-                <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
-                    {aiAnalysis}
+        {/* View Content Switching */}
+        {currentView === 'accounting' ? (
+          <AccountingView accounts={MOCK_ACCOUNTS} entries={MOCK_JOURNAL_ENTRIES} />
+        ) : (
+          /* DASHBOARD VIEW */
+          <>
+            {/* AI Result Panel */}
+            {aiAnalysis && (
+                <div className="mb-6 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-lg p-4 shadow-sm relative overflow-hidden animate-in fade-in duration-300">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                    <h3 className="text-indigo-800 font-bold text-sm flex items-center gap-2 mb-2">
+                        <Sparkles size={14} />
+                        Phân tích từ Trợ lý AI
+                    </h3>
+                    <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+                        {aiAnalysis}
+                    </div>
                 </div>
+            )}
+
+            {/* KPI Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {dashboardData.map((item) => (
+                <StatCard key={item.id} data={item} />
+              ))}
             </div>
+
+            {/* Charts & Activity Section */}
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 h-auto xl:h-[400px]">
+              <div className="xl:col-span-3 h-[400px] xl:h-auto">
+                 <RevenueChart data={MOCK_CHART_DATA} />
+              </div>
+              <div className="xl:col-span-1 h-[400px] xl:h-auto">
+                 <RecentActivity activities={MOCK_ACTIVITY} />
+              </div>
+            </div>
+          </>
         )}
-
-        {/* KPI Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {dashboardData.map((item) => (
-            <StatCard key={item.id} data={item} />
-          ))}
-        </div>
-
-        {/* Charts & Activity Section */}
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 h-auto xl:h-[400px]">
-          <div className="xl:col-span-3 h-[400px] xl:h-auto">
-             <RevenueChart data={MOCK_CHART_DATA} />
-          </div>
-          <div className="xl:col-span-1 h-[400px] xl:h-auto">
-             <RecentActivity activities={MOCK_ACTIVITY} />
-          </div>
-        </div>
       </main>
 
-      {/* Chat Widget */}
+      {/* Chat Widget - Available in all views */}
       <ChatWidget 
         kpiData={dashboardData} 
         recentActivity={MOCK_ACTIVITY}

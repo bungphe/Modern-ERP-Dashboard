@@ -50,3 +50,22 @@ export interface ChatMessage {
   sender: 'user' | 'ai';
   timestamp: Date;
 }
+
+// --- ACCOUNTING TYPES ---
+export interface Account {
+  code: string;
+  name: string;
+  category: 'Tài sản' | 'Nợ phải trả' | 'Vốn chủ sở hữu' | 'Doanh thu' | 'Chi phí';
+  balance: number;
+  type: 'Dư Nợ' | 'Dư Có';
+}
+
+export interface JournalEntry {
+  id: string;
+  date: string;
+  voucherNo: string; // Số chứng từ
+  description: string;
+  debitAccount: string; // TK Nợ
+  creditAccount: string; // TK Có
+  amount: number;
+}
