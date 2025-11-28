@@ -47,10 +47,10 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
                 {/* Logo Area */}
-                <div className="w-8 h-8 bg-red-600 rounded text-white font-bold flex items-center justify-center text-xs shadow-sm">
-                    Hi
+                <div className="w-8 h-8 bg-green-600 rounded text-white font-bold flex items-center justify-center text-xs shadow-sm">
+                    QB
                 </div>
-                <span className="text-xs font-bold text-gray-600">CodeOn</span>
+                <span className="text-xs font-bold text-gray-600">Quickbook (QBVN)</span>
             </div>
             
             <div className="h-6 w-px bg-gray-300 mx-2 hidden md:block"></div>

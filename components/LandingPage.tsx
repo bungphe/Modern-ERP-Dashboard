@@ -14,10 +14,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
       {/* Navbar */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto sticky top-0 z-50 bg-white/80 backdrop-blur-md">
         <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-red-600 rounded text-white font-bold flex items-center justify-center text-xs shadow-sm">
-                Hi
+            <div className="w-8 h-8 bg-green-600 rounded text-white font-bold flex items-center justify-center text-xs shadow-sm">
+                QB
             </div>
-            <span className="text-xl font-bold text-gray-800 tracking-tight">CodeOn ERP</span>
+            <span className="text-xl font-bold text-gray-800 tracking-tight">Quickbook (QBVN)</span>
         </div>
         <div className="hidden md:flex gap-8 text-sm font-medium text-gray-600">
             <button onClick={() => document.getElementById('features')?.scrollIntoView({behavior: 'smooth'})} className="hover:text-blue-600 transition-colors">Tính năng</button>
@@ -154,7 +154,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
              
              <h2 className="text-3xl md:text-4xl font-bold mb-6 relative z-10">Sẵn sàng tối ưu hóa doanh nghiệp của bạn?</h2>
              <p className="text-blue-100 text-lg mb-10 max-w-2xl mx-auto relative z-10">
-                Trải nghiệm sức mạnh của CodeOn ERP với dashboard tương tác và trợ lý AI ngay hôm nay.
+                Trải nghiệm sức mạnh của Quickbook (QBVN) với dashboard tương tác và trợ lý AI ngay hôm nay.
              </p>
              <button 
                 onClick={onStart}
@@ -169,11 +169,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
       <footer className="bg-white border-t border-gray-200 py-12 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-gray-700 rounded text-white font-bold flex items-center justify-center text-[10px]">Hi</div>
-                <span className="font-bold text-gray-700">CodeOn ERP</span>
+                <div className="w-6 h-6 bg-green-700 rounded text-white font-bold flex items-center justify-center text-[10px]">QB</div>
+                <span className="font-bold text-gray-700">Quickbook (QBVN)</span>
             </div>
             <div className="text-sm text-gray-500">
-                © 2025 CodeOn Technology. All rights reserved.
+                © 2025 Quickbook Vietnam. All rights reserved.
             </div>
         </div>
       </footer>
